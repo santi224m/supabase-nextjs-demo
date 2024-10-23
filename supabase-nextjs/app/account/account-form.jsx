@@ -8,6 +8,7 @@ export default function AccountForm({ user }) {
   const [fullname, setFullname] = useState(null)
   const [username, setUsername] = useState(null)
   const [website, setWebsite] = useState(null)
+  const [password, setPassword] = useState(null)
   const [avatar_url, setAvatarUrl] = useState(null)
 
   const getProfile = useCallback(async () => {
@@ -62,6 +63,20 @@ export default function AccountForm({ user }) {
     }
   }
 
+  async function updateUserPassword(new_password) {
+    try {
+      setLoading(true);
+      console.log("new_password: ", new_password);
+      const { error } = await supabase.auth.updateUser({ password: new_password });
+      if (error) throw error;
+      alert('Password updated');
+    } catch (error) {
+      alert('Error updating password');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="form-widget">
       <div>
@@ -95,6 +110,15 @@ export default function AccountForm({ user }) {
           onChange={(e) => setWebsite(e.target.value)}
         />
       </div>
+      <div>
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          value={password || ''}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
 
       <div>
         <button
@@ -103,6 +127,16 @@ export default function AccountForm({ user }) {
           disabled={loading}
         >
           {loading ? 'Loading ...' : 'Update'}
+        </button>
+      </div>
+
+      <div>
+        <button
+          className="button primary block"
+          onClick={(e) => updateUserPassword(password)}
+          disabled={loading}
+        >
+          {loading ? 'Loading ...' : 'Reset password'}
         </button>
       </div>
 
